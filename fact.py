@@ -1,86 +1,85 @@
-from tkinter import Tk, Canvas, HIDDEN, NORMAL
-from time import sleep
+from tkinter import Tk, Button, font
 from random import randint
 
 
-colors = ['red', 'yellow', 'green', 'black', 'grey', 'pink', 'blue']
-currentTime = 1000
-currentAttempt = 0
+symbols = ['÷', '※', '™', 'π', 'Δ', 'ø', '☠', '©', '×']
 
-p1Points = 0
-p2Points = 0
+pairsAmount = 4
+btnMass = []
 
 root = Tk()
-canvas = Canvas(root, width=400, height=400)
-canvas.pack()
-
-square = None
-
-def cutTime(currTime):
-    return currTime - 150
-
-def createFigure():
-    return canvas.create_rectangle(35, 20, 365, 350, width=15, outline=colors[randint(0, len(colors) - 1)], fill=colors[randint(0, len(colors) - 1)]) # Создание квадрата
-
-def gameTick():
-    global currentAttempt, square, currentTime
+root.geometry('500x500')
+lastButton = None
 
 
-    if (currentAttempt >= 30):
-        print(f'Конец! Счёт P1 = {p1Points}, P2 = {p2Points}')
+def chooseSymbols(mass, amount):
+    chosenSymbols = []
+    while len(chosenSymbols) < amount:
+        currentSymbol = randint(0, len(mass) - 1)
+        if mass[currentSymbol] not in chosenSymbols:
+            chosenSymbols.append(mass[currentSymbol])
+    return chosenSymbols * 2
+
+
+def clickButton(button, buttonData):
+    global lastButton
+
+    if button.cget("text") != '':
         return
-    if square:
-        canvas.delete(square)
-    square = createFigure()
+    
+    button.config(text=buttonData['symbol'])
 
-    root.after(currentTime, gameTick)
-    currentAttempt += 1
-    if (currentAttempt % 5 == 0):
-        currentTime = cutTime(currentTime)
-
-
-
-def delete(event):
-    global p1Points, p2Points
-
-    fillСolor = canvas.itemcget(square, 'fill')
-    outlineСolor = canvas.itemcget(square, 'outline')
-
-    if not canvas.find_withtag(square):
+    if lastButton == None:
+        lastButton = {
+            'parent': button,
+            'data': buttonData
+        }
         return
 
-    canvas.delete(square)
+    if lastButton['data']['symbol'] == buttonData['symbol']:
+        lastButton['parent'].config(bg='red')
 
-    if fillСolor != outlineСolor:
-        return
+        button.config(bg='red')
+
+        lastButton = None
         
-    if event.char == 'q':
-        p1Points += 1
     else:
-        p2Points += 1
-
-canvas.bind('q', delete) 
-canvas.bind('p', delete) 
+        root.after(500, lambda b1 = lastButton['parent'], b2 = button: closeCards(b1,b2))
+        lastButton = None
 
 
-canvas.focus_set()
+def closeCards(b1, b2):
+    b1.config(text='')
+    b2.config(text='')
 
-gameTick()
+def drawButtons(mass):
+    currentID = 1
 
-root.mainloop() 
+    availableSymbols = mass.copy()
 
-
-
-
-
-# if (canvas.itemcget(square, 'fill') == canvas.itemcget(square, 'outline'))
-
-
-
-# def fn(event):
-#     print(f'Pressed button {event.char}')
+    for i in range(len(mass)):
+        randomIndex = randint(0, len(availableSymbols) - 1)
+        currentSymbol = availableSymbols.pop(randomIndex)
 
 
+        btnData = {
+            'id': currentID,
+            'symbol': currentSymbol
+        }
+        btnMass.append(btnData)
+        btn = Button(root, text='', width=5, height=2)
+        btn.config(command=lambda b = btn, data = btnData: clickButton(b, data))
+        btn.pack()
+
+        currentID += 1
 
 
 
+
+
+
+gameDeck = chooseSymbols(symbols, pairsAmount)
+
+drawButtons(gameDeck)
+
+root.mainloop() # запуск
