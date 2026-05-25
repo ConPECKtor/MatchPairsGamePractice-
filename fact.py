@@ -23,7 +23,6 @@ def chooseSymbols(mass, amount):
 
 def clickButton(button, buttonData):
     global lastButton
-
     if button.cget("text") != '':
         return
     
@@ -54,14 +53,11 @@ def closeCards(b1, b2):
 
 def drawButtons(mass):
     currentID = 1
-
     availableSymbols = mass.copy()
 
     for i in range(len(mass)):
         randomIndex = randint(0, len(availableSymbols) - 1)
         currentSymbol = availableSymbols.pop(randomIndex)
-
-
         btnData = {
             'id': currentID,
             'symbol': currentSymbol
@@ -75,11 +71,8 @@ def drawButtons(mass):
 
 
 
-
-
-
 gameDeck = chooseSymbols(symbols, pairsAmount)
 
 drawButtons(gameDeck)
 
-root.mainloop() # запуск
+root.mainloop() 
