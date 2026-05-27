@@ -36,9 +36,9 @@ def clickButton(button, buttonData):
         return
 
     if lastButton['data']['symbol'] == buttonData['symbol']:
-        lastButton['parent'].config(bg='red')
+        lastButton['parent'].config(bg='green')
 
-        button.config(bg='red')
+        button.config(bg='green')
 
         lastButton = None
         
